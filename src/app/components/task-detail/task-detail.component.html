@@ -1,0 +1,315 @@
+<div class="task-detail-container" *ngIf="!isLoading && task; else loadingOrError">
+  <!-- Task Header -->
+  <div class="task-header">
+    <div class="header-left">
+      <button
+        class="btn btn-outline-secondary btn-sm me-3"
+        (click)="goBack()"
+      >
+        <i class="fas fa-arrow-left"></i>
+        Back to List
+      </button>
+      <h1 class="task-title">{{ task.title }}</h1>
+    </div>
+
+    <div class="header-right">
+      <div class="task-actions">
+        <button
+          class="btn btn-primary me-2"
+          (click)="navigateToEdit()"
+        >
+          <i class="fas fa-edit"></i>
+          Edit Task
+        </button>
+        <button
+          class="btn btn-outline-danger"
+          (click)="deleteTask()"
+        >
+          <i class="fas fa-trash"></i>
+          Delete Task
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Status Bar -->
+  <div class="status-bar">
+    <div class="status-item">
+      <span class="status-label">Status:</span>
+      <span
+        class="status-badge"
+        [ngClass]="getStatusClass(task.status)"
+      >
+        <i [class]="getStatusIcon(task.status)"></i>
+        {{ task.status }}
+      </span>
+    </div>
+
+    <div class="status-item">
+      <span class="status-label">Priority:</span>
+      <span
+        class="priority-badge"
+        [ngClass]="getPriorityClass(task.priority)"
+      >
+        <i [class]="getPriorityIcon(task.priority)"></i>
+        {{ task.priority }}
+      </span>
+    </div>
+
+    <div class="status-item">
+      <span class="status-label">Due Date:</span>
+      <span
+        class="due-date"
+        [ngClass]="{
+          'text-danger': isOverdue,
+          'text-warning': getDaysRemaining() === 0
+        }"
+      >
+        <i class="fas fa-calendar-alt me-2"></i>
+        {{ task.dueDate | date:'fullDate' }}
+      <span *ngIf="daysRemainingText" class="days-remaining">
+  ({{ daysRemainingText }})
+</span>
+      </span>
+    </div>
+
+    <div class="status-item">
+      <span class="status-label">Assigned To:</span>
+      <div class="assigned-user">
+        <div class="user-avatar">
+          {{ task.assignedTo.charAt(0) }}
+        </div>
+        <span class="user-name">{{ task.assignedTo }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Details Grid -->
+  <div class="details-grid">
+    <!-- Description Card -->
+    <div class="detail-card">
+      <div class="card-header">
+        <h3><i class="fas fa-align-left me-2"></i>Description</h3>
+      </div>
+      <div class="card-body">
+        <p>{{ task.description }}</p>
+      </div>
+    </div>
+
+    <!-- Comments Card -->
+    <div class="detail-card">
+      <div class="card-header">
+        <h3><i class="fas fa-comment me-2"></i>Comments</h3>
+      </div>
+      <div class="card-body">
+        <p>{{ task.comments || 'No comments available' }}</p>
+      </div>
+    </div>
+
+    <!-- Task Metadata -->
+    <div class="detail-card">
+      <div class="card-header">
+        <h3><i class="fas fa-info-circle me-2"></i>Task Information</h3>
+      </div>
+      <div class="card-body">
+        <div class="metadata-grid">
+          <div class="metadata-item">
+            <span class="metadata-label">Task ID:</span>
+            <span class="metadata-value">{{ task.id }}</span>
+          </div>
+
+          <div class="metadata-item">
+            <span class="metadata-label">Created:</span>
+            <span class="metadata-value">{{ task.createdAt | date:'medium' }}</span>
+          </div>
+
+          <div class="metadata-item">
+            <span class="metadata-label">Last Updated:</span>
+            <span class="metadata-value">{{ task.updatedAt | date:'medium' }}</span>
+          </div>
+
+          <div class="metadata-item">
+            <span class="metadata-label">Task Age:</span>
+            <span class="metadata-value">{{ getTaskAgeInDays() }} days</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="detail-card">
+      <div class="card-header">
+        <h3><i class="fas fa-bolt me-2"></i>Quick Actions</h3>
+      </div>
+      <div class="card-body">
+        <div class="quick-actions">
+          <!-- Status Update -->
+          <div class="action-group">
+            <label>Update Status:</label>
+            <div class="action-buttons">
+              <button
+                *ngFor="let status of statusOptions"
+                class="btn btn-sm"
+                [ngClass]="{
+                  'btn-success': status === 'Completed',
+                  'btn-warning': status === 'In Progress',
+                  'btn-secondary': status === 'Not Started'
+                }"
+                [disabled]="task.status === status"
+                (click)="updateStatus(status)"
+              >
+                {{ status }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Priority Update -->
+          <div class="action-group mt-3">
+            <label>Update Priority:</label>
+            <div class="action-buttons">
+              <button
+                *ngFor="let priority of priorityOptions"
+                class="btn btn-sm"
+                [ngClass]="{
+                  'btn-danger': priority === 'High',
+                  'btn-warning': priority === 'Normal',
+                  'btn-success': priority === 'Low'
+                }"
+                [disabled]="task.priority === priority"
+                (click)="updatePriority(priority)"
+              >
+                {{ priority }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Mode (Inline Editing) -->
+  <div *ngIf="isEditing" class="edit-mode mt-4">
+    <div class="edit-card">
+      <div class="card-header">
+        <h3><i class="fas fa-edit me-2"></i>Edit Task</h3>
+      </div>
+      <div class="card-body">
+        <form>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Title</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editFormData.title"
+                name="title"
+              >
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Assigned To</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editFormData.assignedTo"
+                name="assignedTo"
+              >
+            </div>
+
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                rows="4"
+                [(ngModel)]="editFormData.description"
+                name="description"
+              ></textarea>
+            </div>
+
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Comments</label>
+              <textarea
+                class="form-control"
+                rows="3"
+                [(ngModel)]="editFormData.comments"
+                name="comments"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="edit-actions">
+            <button
+              type="button"
+              class="btn btn-outline-secondary me-2"
+              (click)="cancelEdit()"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="saveTask()"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Actions -->
+  <div class="additional-actions mt-4">
+    <button
+      class="btn btn-outline-primary me-2"
+      (click)="enableEditMode()"
+      *ngIf="!isEditing"
+    >
+      <i class="fas fa-pencil-alt"></i>
+      Quick Edit
+    </button>
+
+    <button
+      class="btn btn-outline-info me-2"
+      (click)="navigateToEdit()"
+    >
+      <i class="fas fa-external-link-alt"></i>
+      Open in Full Edit
+    </button>
+
+    <button
+      class="btn btn-outline-secondary"
+      (click)="goBack()"
+    >
+      <i class="fas fa-list"></i>
+      View All Tasks
+    </button>
+  </div>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingOrError>
+  <div class="loading-error-container">
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3">Loading task details...</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-state">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+      </div>
+      <h3>Task Not Found</h3>
+      <p class="text-muted">{{ errorMessage }}</p>
+      <button
+        class="btn btn-primary mt-3"
+        (click)="goBack()"
+      >
+        <i class="fas fa-arrow-left"></i>
+        Back to Task List
+      </button>
+    </div>
+  </div>
+</ng-template>

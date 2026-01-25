@@ -1,0 +1,237 @@
+<div class="task-list-container" *ngIf="!isLoading; else loading">
+
+  <!-- Header with All Tasks and New Task buttons side by side -->
+<div class="header-section d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex align-items-center">
+    <h2 class="mb-0"><i class="fas fa-tasks me-2"></i> All Tasks</h2>
+
+  </div>
+  <button class="btn btn-primary" routerLink="/new-task" routerLinkActive="active">
+    <i class="fas fa-plus me-1"></i> New Task
+  </button>
+</div>
+
+  <!-- Statistics Cards -->
+  <div class="statistics-section row mb-4">
+    <!-- Total Card -->
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="card stat-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-list-alt fa-lg text-primary me-3"></i>
+            <div>
+              <div class="stat-title">Total</div>
+              <div class="stat-value">{{ statistics.total }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Card -->
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="card stat-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-check-circle fa-lg text-success me-3"></i>
+            <div>
+              <div class="stat-title">Completed</div>
+              <div class="stat-value text-success">{{ statistics.completed }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- In Progress Card -->
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="card stat-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-spinner fa-spin fa-lg text-warning me-3"></i>
+            <div>
+              <div class="stat-title">In Progress</div>
+              <div class="stat-value text-warning">{{ statistics.inProgress }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Not Started Card -->
+    <div class="col-md-3 col-sm-6 mb-3">
+      <div class="card stat-card h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-clock fa-lg text-secondary me-3"></i>
+            <div>
+              <div class="stat-title">Not Started</div>
+              <div class="stat-value text-secondary">{{ statistics.notStarted }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Row -->
+  <div class="filter-search-section mb-4">
+    <div class="d-flex align-items-center justify-content-between">
+      <!-- Filters and Buttons Container -->
+      <div class="d-flex align-items-center" style="gap: 10px;">
+        <!-- Status Filter -->
+        <select class="form-select" [(ngModel)]="selectedStatus" (change)="onFilterChange()" style="width: 130px;">
+          <option value="all">All Status</option>
+          <option *ngFor="let status of statusOptions" [value]="status">
+            {{ status }}
+          </option>
+        </select>
+
+        <!-- Priority Filter -->
+        <select class="form-select" [(ngModel)]="selectedPriority" (change)="onFilterChange()" style="width: 130px;">
+          <option value="all">All Priority</option>
+          <option *ngFor="let priority of priorityOptions" [value]="priority">
+            {{ priority }}
+          </option>
+        </select>
+
+        <!-- User Filter -->
+        <select class="form-select" [(ngModel)]="selectedUser" (change)="onFilterChange()" style="width: 130px;">
+          <option value="all">All Users</option>
+          <option *ngFor="let user of userOptions" [value]="user">
+            {{ user }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-flex" style="gap: 8px;">
+        <button class="btn btn-outline-danger" style="padding: 6px 12px;margin-right: 15px;" (click)="clearFilters()">
+          <i class="fas fa-times me-1"></i>
+          Clear
+        </button>
+        <button class="btn btn-outline-primary" style="padding: 6px 12px;" (click)="refreshTasks()">
+          <i class="fas fa-sync me-1"></i>
+          Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Records count -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0"><strong>{{ totalRecords }} records</strong></h5>
+  </div>
+
+  <!-- Task Table -->
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead class="table-light">
+             <tr>
+            <th style="width: 15%; min-width: 120px;">Assigned To</th>
+            <th style="width: 15%; min-width: 100px;">Status</th>
+            <th style="width: 15%; min-width: 120px;">Due Date</th>
+            <th style="width: 12%; min-width: 100px;">Priority</th>
+            <th style="width: 30%; min-width: 150px;">Comments</th>
+            <th style="width: 16%; min-width: 130px;">Actions</th>
+          </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of paginatedTasks">
+          <td class="fw-medium">{{ task.assignedTo }}</td>
+          <td>
+            <span [ngClass]="getStatusClass(task.status)" class="status-badge">
+              <i [class]="getStatusIcon(task.status)" class="me-1"></i>
+              {{ task.status }}
+            </span>
+          </td>
+          <td>
+            <span [ngClass]="getDateClass(task)" class="d-flex align-items-center">
+              <i [class]="getDateIcon(task)" class="me-2"></i>
+              {{ formatDate(task.dueDate) }}
+            </span>
+          </td>
+          <td>
+            <span [ngClass]="getPriorityClass(task.priority)" class="priority-badge">
+              <i [class]="getPriorityIcon(task.priority)" class="me-1"></i>
+              {{ task.priority }}
+            </span>
+          </td>
+          <td class="comments-cell">{{ task.comments || '-' }}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="editTask(task.id)" title="Edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger me-1" (click)="deleteTask(task.id)" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-info" (click)="viewTaskDetails(task)" title="View Details">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredTasks.length === 0">
+          <td colspan="6" class="text-center py-4">
+            <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+            <p class="text-muted mb-0">No tasks found</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+     <div class="text-muted small">
+      Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ paginationEnd }} of {{ totalRecords }} tasks
+    </div>
+
+  <!-- Pagination Section - At the bottom in one row -->
+  <div *ngIf="totalRecords > itemsPerPage" class="d-flex justify-content-between align-items-center mt-3">
+    <!-- Left side - Showing X to Y of Z -->
+
+
+    <!-- Right side - Pagination -->
+   <!-- Pagination Section - At the bottom in one row -->
+<div *ngIf="totalRecords > itemsPerPage" class="d-flex justify-content-between align-items-center mt-3">
+  <!-- Left side - Showing X to Y of Z -->
+
+
+  <!-- Right side - Pagination with First/Prev/Next/Last -->
+ <!-- Pagination Section - At the bottom in one row -->
+<div *ngIf="totalRecords > itemsPerPage" class="d-flex justify-content-between align-items-center mt-3">
+  <!-- Left side - Showing X to Y of Z -->
+
+
+  <!-- Right side - Pagination (simple text style like in image) -->
+  <div class="pagination-text">
+    <span [class.disabled]="currentPage === 1" (click)="goToPage(1)" class="page-link-text">
+      First
+    </span>
+    &nbsp;&nbsp;
+    <span [class.disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)" class="page-link-text">
+      Prev
+    </span>
+    &nbsp;&nbsp;
+    <span class="current-page">
+      {{ currentPage }}
+    </span>
+    &nbsp;&nbsp;
+    <span [class.disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)" class="page-link-text">
+      Next
+    </span>
+    &nbsp;&nbsp;
+    <span [class.disabled]="currentPage === totalPages" (click)="goToPage(totalPages)" class="page-link-text">
+      Last
+    </span>
+  </div>
+</div>
+</div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="text-center p-5">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+    <p class="mt-3">Loading tasks...</p>
+  </div>
+</ng-template>

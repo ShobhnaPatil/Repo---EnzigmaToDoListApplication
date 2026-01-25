@@ -1,0 +1,143 @@
+<div class="task-item" [class.selected]="selected" [class.overdue]="isOverdue" appHighlight>
+
+  <!-- Checkbox Column -->
+  <div class="task-checkbox" *ngIf="showCheckbox">
+    <input
+      type="checkbox"
+      [checked]="selected"
+      (change)="onSelectionChange()"
+      class="task-select-checkbox"
+    >
+  </div>
+
+  <!-- Assigned To Column -->
+  <div class="task-assigned">
+    <div class="assigned-user">
+      <div class="user-avatar">
+        {{ task.assignedTo.charAt(0) }}{{ task.assignedTo.split(' ')[1]?.charAt(0) || '' }}
+      </div>
+      <span class="user-name">{{ task.assignedTo }}</span>
+    </div>
+  </div>
+
+  <!-- Status Column -->
+  <div class="task-status">
+    <div class="status-container">
+      <select
+        [(ngModel)]="task.status"
+        (change)="onStatusChange(task.status)"
+        class="status-select"
+        [class]="getStatusClass()"
+      >
+        <option *ngFor="let status of statusOptions" [value]="status">
+          {{ status }}
+        </option>
+      </select>
+      <div class="status-progress">
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            [style.width.%]="getProgressPercentage()"
+            [style.background]="getPriorityColorCode()"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Due Date Column -->
+  <div class="task-due-date">
+    <div class="due-date-container">
+      <span class="date-icon">📅</span>
+      <span [class]="dueDateColor" class="date-text">
+        {{ formattedDueDate }}
+      </span>
+      <div class="days-remaining" *ngIf="!isOverdue && task.status !== TaskStatus.COMPLETED">
+        <small>({{ daysRemaining }} day{{ daysRemaining !== 1 ? 's' : '' }} left)</small>
+      </div>
+      <div class="overdue-badge" *ngIf="isOverdue">
+        <span class="overdue-text">Overdue!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Priority Column -->
+  <div class="task-priority">
+    <select
+      [(ngModel)]="task.priority"
+      (change)="onPriorityChange(task.priority)"
+      class="priority-select"
+      [class]="getPriorityClass()"
+    >
+      <option *ngFor="let priority of priorityOptions" [value]="priority">
+        {{ priority }}
+      </option>
+    </select>
+    <div class="priority-indicator" [style.background]="getPriorityColorCode()"></div>
+  </div>
+
+  <!-- Comments Column -->
+  <div class="task-comments">
+    <div class="comments-container">
+      <span class="comments-icon">💬</span>
+      <div class="comments-text" [title]="task.comments">
+        {{ task.comments || 'No comments' }}
+      </div>
+      <div class="comments-count" *ngIf="task.comments">
+        <span class="badge">{{ task.comments.length > 50 ? '...' : '' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions Column -->
+  <div class="task-actions" *ngIf="showActions">
+    <div class="action-buttons">
+      <button
+        class="btn-action btn-view"
+        (click)="onView()"
+        title="View Details"
+      >
+        <span class="action-icon">👁️</span>
+        <span class="action-text">View</span>
+      </button>
+
+      <button
+        class="btn-action btn-edit"
+        (click)="onEdit()"
+        title="Edit Task"
+      >
+        <span class="action-icon">✏️</span>
+        <span class="action-text">Edit</span>
+      </button>
+
+      <button
+        class="btn-action btn-delete"
+        (click)="onDelete()"
+        title="Delete Task"
+      >
+        <span class="action-icon">🗑️</span>
+        <span class="action-text">Delete</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Task Details (Expanded View) -->
+<div class="task-details" *ngIf="selected">
+  <div class="details-content">
+    <h4>{{ task.title }}</h4>
+    <p class="task-description">{{ task.description }}</p>
+    <div class="details-meta">
+      <span class="meta-item">
+        <strong>Created:</strong> {{ task.createdAt | date:'medium' }}
+      </span>
+      <span class="meta-item">
+        <strong>Last Updated:</strong> {{ task.updatedAt | date:'medium' }}
+      </span>
+      <span class="meta-item">
+        <strong>ID:</strong> {{ task.id }}
+      </span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,247 @@
+<div class="task-form-container">
+  <!-- Form Header with Tasks title -->
+  <!-- <div class="form-header">
+    <div class="header-left">
+      <div class="tasks-title">
+        <div class="red-square"></div>
+        <h1>Tasks</h1>
+      </div>
+    </div>
+
+
+  </div> -->
+
+  <!-- Main Form Container -->
+  <div class="form-main-container">
+    <div class="form-card">
+      <!-- Form Title -->
+      <div class="form-title-section">
+        <h2 class="form-title">
+          {{ isEditMode ? 'Edit Task' : 'Create New Task' }}
+        </h2>
+        <p class="form-subtitle">
+          {{ isEditMode ? 'Update task details below' : 'Fill in the details to create a new task' }}
+        </p>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isSubmitting && isEditMode" class="loading-overlay">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading task data...</p>
+      </div>
+
+      <!-- Task Form -->
+      <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" *ngIf="!(isSubmitting && isEditMode)">
+        <!-- Title Field -->
+        <div class="form-field">
+          <label for="title" class="field-label">
+            Title <span class="required-star">*</span>
+          </label>
+          <input
+            type="text"
+            id="title"
+            class="form-input"
+            [ngClass]="{ 'input-error': hasError('title') }"
+            formControlName="title"
+            placeholder="Enter task title"
+          >
+          <div *ngIf="hasError('title')" class="error-message">
+            {{ getErrorMessage('title') }}
+          </div>
+          <div class="field-help">
+            A brief, descriptive title for your task (3-100 characters)
+          </div>
+        </div>
+
+        <!-- Description Field -->
+        <div class="form-field">
+          <label for="description" class="field-label">
+            Description <span class="required-star">*</span>
+          </label>
+          <textarea
+            id="description"
+            class="form-textarea"
+            [ngClass]="{ 'input-error': hasError('description') }"
+            formControlName="description"
+            rows="4"
+            placeholder="Enter task description"
+          ></textarea>
+          <div *ngIf="hasError('description')" class="error-message">
+            {{ getErrorMessage('description') }}
+          </div>
+          <div class="field-help">
+            Detailed description of the task (10-500 characters)
+          </div>
+        </div>
+
+        <!-- Two Column Section -->
+        <div class="form-two-column">
+          <!-- Left Column -->
+          <div class="form-column">
+            <!-- Assigned To Field -->
+            <div class="form-field">
+              <label for="assignedTo" class="field-label">
+                Assigned To <span class="required-star">*</span>
+              </label>
+              <select
+                id="assignedTo"
+                class="form-select"
+                [ngClass]="{ 'input-error': hasError('assignedTo') }"
+                formControlName="assignedTo"
+              >
+                <option value="" disabled selected>Select a user</option>
+                <option *ngFor="let user of availableUsers" [value]="user">
+                  {{ user }}
+                </option>
+              </select>
+              <div *ngIf="hasError('assignedTo')" class="error-message">
+                {{ getErrorMessage('assignedTo') }}
+              </div>
+            </div>
+
+            <!-- Status Field -->
+            <div class="form-field">
+              <label for="status" class="field-label">
+                Status <span class="required-star">*</span>
+              </label>
+              <select
+                id="status"
+                class="form-select"
+                [ngClass]="{ 'input-error': hasError('status') }"
+                formControlName="status"
+              >
+                <option *ngFor="let status of statusOptions" [value]="status">
+                  {{ status }}
+                </option>
+              </select>
+              <div *ngIf="hasError('status')" class="error-message">
+                {{ getErrorMessage('status') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="form-column">
+            <!-- Due Date Field -->
+            <div class="form-field">
+              <label for="dueDate" class="field-label">
+                Due Date <span class="required-star">*</span>
+              </label>
+              <input
+                type="date"
+                id="dueDate"
+                class="form-input"
+                [ngClass]="{ 'input-error': hasError('dueDate') }"
+                formControlName="dueDate"
+                [min]="minDate"
+                [max]="maxDate"
+              >
+              <div *ngIf="hasError('dueDate')" class="error-message">
+                {{ getErrorMessage('dueDate') }}
+              </div>
+
+            </div>
+
+            <!-- Priority Field -->
+            <div class="form-field">
+              <label for="priority" class="field-label">
+                Priority <span class="required-star">*</span>
+              </label>
+              <select
+                id="priority"
+                class="form-select"
+                [ngClass]="{ 'input-error': hasError('priority') }"
+                formControlName="priority"
+              >
+                <option *ngFor="let priority of priorityOptions" [value]="priority">
+                  {{ priority }}
+                </option>
+              </select>
+              <div *ngIf="hasError('priority')" class="error-message">
+                {{ getErrorMessage('priority') }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments Field -->
+        <!-- <div class="form-field">
+          <label for="comments" class="field-label">
+            Comments
+          </label>
+          <textarea
+            id="comments"
+            class="form-textarea"
+            [ngClass]="{ 'input-error': hasError('comments') }"
+            formControlName="comments"
+            rows="3"
+            placeholder="Additional comments or notes"
+          ></textarea>
+          <div *ngIf="hasError('comments')" class="error-message">
+            {{ getErrorMessage('comments') }}
+          </div>
+          <div class="field-help">
+            Optional comments or notes about the task (max 200 characters)
+          </div>
+        </div> -->
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-cancel"
+            (click)="onCancel()"
+            [disabled]="isSubmitting"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-reset"
+            (click)="onReset()"
+            [disabled]="isSubmitting"
+          >
+            Reset
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-submit"
+            [disabled]="taskForm.invalid || isSubmitting"
+          >
+            <i class="fas" [class.fa-save]="isEditMode" [class.fa-plus]="!isEditMode" onclick="onSubmit()"></i>
+            {{ submitButtonText }}
+            <span *ngIf="isSubmitting" class="spinner"></span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Validation Summary -->
+      <div *ngIf="taskForm.invalid && taskForm.touched" class="validation-summary">
+        <div class="validation-alert">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div class="validation-content">
+            <strong>Please fix the following errors:</strong>
+            <ul>
+              <li *ngIf="title?.invalid && title?.touched">
+                {{ getErrorMessage('title') }}
+              </li>
+              <li *ngIf="description?.invalid && description?.touched">
+                {{ getErrorMessage('description') }}
+              </li>
+              <li *ngIf="assignedTo?.invalid && assignedTo?.touched">
+                {{ getErrorMessage('assignedTo') }}
+              </li>
+              <li *ngIf="dueDate?.invalid && dueDate?.touched">
+                {{ getErrorMessage('dueDate') }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

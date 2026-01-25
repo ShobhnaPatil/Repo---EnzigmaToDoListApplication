@@ -1,0 +1,455 @@
+/* Task Form Container */
+.task-form-container {
+  min-height: calc(100vh - 60px);
+  background: #f5f7fa;
+  padding: 15px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Main Form Container - WIDER */
+.form-main-container {
+  width: 100%;
+  max-width: 900px;
+  flex: 0 0 auto;
+}
+
+.form-card {
+  background: white;
+  border-radius: 6px;
+  padding: 20px 35px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  position: relative;
+  min-height: auto;
+  height: fit-content;
+}
+
+/* Form Title Section - SUPER COMPACT */
+.form-title-section {
+  margin-bottom: 15px;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.form-title {
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.form-subtitle {
+  color: #7f8c8d;
+  font-size: 12px;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  border-radius: 6px;
+}
+
+.loading-overlay .spinner-border {
+  width: 1.2rem;
+  height: 1.2rem;
+  color: #667eea;
+}
+
+.loading-overlay p {
+  color: #667eea;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+/* Form Fields - SUPER COMPACT */
+.form-field {
+  margin-bottom: 12px;
+}
+
+.field-label {
+  display: block;
+  font-weight: 800;
+  color: #2c3e50;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.required-star {
+  color: #e74c3c;
+  font-size: 11px;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #dce1e6;
+  border-radius: 3px;
+  font-size: 12px;
+  transition: all 0.15s ease;
+  background: white;
+  box-sizing: border-box;
+  min-height: 32px;
+  max-height: 32px;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 1px rgba(102, 126, 234, 0.1);
+}
+
+.form-input.input-error,
+.form-textarea.input-error,
+.form-select.input-error {
+  border-color: #e74c3c;
+}
+
+.form-input.input-error:focus,
+.form-textarea.input-error:focus,
+.form-select.input-error:focus {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 1px rgba(231, 76, 60, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 70px;
+  max-height: 90px;
+  line-height: 1.3;
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 8px;
+  padding-right: 25px;
+}
+
+/* Two Column Layout - WIDER with minimal gap */
+.form-two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Field Help Text - SUPER SMALL */
+.field-help {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+/* Error Message - SUPER SMALL */
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 12px;
+}
+
+.error-message::before {
+  content: "⚠";
+  font-size: 9px;
+}
+
+/* Form Actions - SUPER COMPACT */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #eaeaea;
+}
+
+.btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 28px;
+  max-height: 28px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #6c757d;
+  border: 1px solid #6c757d;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-reset {
+  background: transparent;
+  color: #f39c12;
+  border: 1px solid #f39c12;
+}
+
+.btn-reset:hover:not(:disabled) {
+  background: #f39c12;
+  color: white;
+}
+
+.btn-submit {
+  background: #667eea;
+  color: white;
+  border: 1px solid #667eea;
+  padding: 6px 18px;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #5a6fd8;
+  transform: translateY(-1px);
+  box-shadow: 0 1px 4px rgba(102, 126, 234, 0.2);
+}
+
+.btn-submit i {
+  font-size: 11px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 4px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Validation Summary - SUPER COMPACT */
+.validation-summary {
+  margin-top: 12px;
+}
+
+.validation-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 3px;
+}
+
+.validation-alert i {
+  color: #ffc107;
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+.validation-content {
+  flex: 1;
+}
+
+.validation-content strong {
+  color: #856404;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.validation-content ul {
+  margin: 0;
+  padding-left: 12px;
+  color: #856404;
+}
+
+.validation-content li {
+  margin-bottom: 1px;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .task-form-container {
+    padding: 10px;
+    min-height: calc(100vh - 40px);
+  }
+
+  .form-main-container {
+    max-width: 100%;
+  }
+
+  .form-card {
+    padding: 15px 20px;
+  }
+
+  .form-two-column {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .form-field {
+    margin-bottom: 10px;
+  }
+
+  .form-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 80px;
+    font-size: 11px;
+    padding: 5px 12px;
+    min-height: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-form-container {
+    padding: 8px;
+    justify-content: flex-start;
+  }
+
+  .form-card {
+    padding: 12px 15px;
+  }
+
+  .form-title {
+    font-size: 16px;
+  }
+
+  .form-subtitle {
+    font-size: 11px;
+  }
+
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 5px 8px;
+    font-size: 11px;
+    min-height: 28px;
+    max-height: 28px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 6px 12px;
+    min-height: 26px;
+  }
+}
+
+/* Specific fixes to match the image */
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #95a5a6;
+  font-size: 11px;
+}
+
+/* Date input specific styling */
+input[type="date"] {
+  color: #2c3e50;
+  font-family: inherit;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+  width: 14px;
+  height: 14px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Make sure form doesn't stretch too tall */
+form {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure consistent heights */
+.form-field:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Remove extra spacing between form elements */
+.form-field .field-help + .error-message {
+  margin-top: 1px;
+}
+
+/* Compact spacing for textarea */
+.form-textarea {
+  padding: 6px 10px;
+}
+
+/* Ensure form fits content height */
+.form-card {
+  height: fit-content;
+}
+
+/* Compact form layout */
+.form-field .field-label + .form-input,
+.form-field .field-label + .form-textarea,
+.form-field .field-label + .form-select {
+  margin-top: 1px;
+}
