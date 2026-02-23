@@ -193,6 +193,7 @@ loadTasks(): void {
       this.taskService.deleteTask(taskId).subscribe({
         next: () => {
           this.loadTasks();
+
           alert('Task deleted successfully!');
         },
         error: (error) => {
@@ -335,9 +336,9 @@ loadTasks(): void {
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
 
-    if (taskDate.toDateString() === today.toDateString()) {
-      return 'Today';
-    }
+    // if (taskDate.toDateString() === today.toDateString()) {
+    //   return 'Today';
+    // }
 
     if (taskDate.toDateString() === tomorrow.toDateString()) {
       return 'Tomorrow';

@@ -130,6 +130,7 @@
              <tr>
             <th style="width: 15%; min-width: 120px;">Assigned To</th>
             <th style="width: 15%; min-width: 100px;">Status</th>
+              <th style="width: 15%; min-width: 120px;">Start Date</th>
             <th style="width: 15%; min-width: 120px;">Due Date</th>
             <th style="width: 12%; min-width: 100px;">Priority</th>
             <th style="width: 30%; min-width: 150px;">Comments</th>
@@ -145,6 +146,13 @@
               {{ task.status }}
             </span>
           </td>
+
+          <td>
+            <span  class="d-flex align-items-center">
+              {{ formatDate(task.startDate) }}
+            </span>
+          </td>
+
           <td>
             <span [ngClass]="getDateClass(task)" class="d-flex align-items-center">
               <i [class]="getDateIcon(task)" class="me-2"></i>

@@ -27,6 +27,7 @@ export class TaskFormComponent implements OnInit {
   // Min and max dates for date picker
   minDate: string;
   maxDate: string;
+  todayDate: string = new Date().toISOString().split('T')[0];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -73,7 +74,8 @@ export class TaskFormComponent implements OnInit {
       status: [TaskStatus.NOT_STARTED, Validators.required],
       dueDate: ['', Validators.required],
       priority: [TaskPriority.NORMAL, Validators.required],
-      comments: ['', Validators.maxLength(200)]
+      comments: ['', Validators.maxLength(200)],
+      startDate: [this.todayDate]
     });
   }
 
@@ -127,7 +129,8 @@ export class TaskFormComponent implements OnInit {
           status: task.status,
           dueDate: formattedDate,
           priority: task.priority,
-          comments: task.comments
+          comments: task.comments,
+          // startDate: task.startDate ? new Date(task.startDate).toISOString().split('T')[0] : ''
         });
 
         this.isSubmitting = false;
@@ -244,6 +247,8 @@ export class TaskFormComponent implements OnInit {
   get dueDate() { return this.taskForm.get('dueDate'); }
   get priority() { return this.taskForm.get('priority'); }
   get comments() { return this.taskForm.get('comments'); }
+  get startDate() { return this.taskForm.get('startDate'); }
+
 
   /**
    * Get validation error message for a field
@@ -330,9 +335,10 @@ export class TaskFormComponent implements OnInit {
     status: formData.status as TaskStatus,
     dueDate: new Date(formData.dueDate),
     priority: formData.priority as TaskPriority,
-    comments: formData.comments || ''
+    comments: formData.comments || '',
+    startDate: new Date(formData.startDate || new Date())
   };
-
+ debugger
   console.log('Submitting task data:', taskData); // For debugging
 
   if (this.isEditMode && this.taskId) {

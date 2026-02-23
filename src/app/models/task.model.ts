@@ -12,6 +12,7 @@ export enum TaskPriority {
 }
 
 export interface Task {
+startDate: string|Date;
   // Unique identifier for the task
   id: number;
 
@@ -60,4 +61,5 @@ export interface TaskFormData {
   dueDate: Date;
   priority: TaskPriority;
   comments: string;
+  startDate: string|Date;
 }
